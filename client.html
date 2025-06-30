@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO Test</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.js"></script>
+</head>
+<body>
+  <h1>Real-Time Board Listener</h1>
+  <pre id="log"></pre>
+
+  <script>
+    const log = document.getElementById('log');
+    const socket = io('http://localhost:5000');
+
+    socket.on('connect', () => {
+      log.innerText += "\n✅ Connected to server";
+    });
+
+    socket.on('connect_error', (err) => {
+      log.innerText += "\n❌ Connection error: " + err.message;
+    });
+
+    const boardId = prompt("Enter Board ID to join:");
+    socket.emit('joinBoard', boardId);
+
+    socket.on('joinedBoard', (msg) => {
+      log.innerText += "\n📥 Joined board: " + msg;
+    });
+
+    socket.on('taskCreated', (task) => {
+      log.innerText += "\n🆕 Task created: " + JSON.stringify(task, null, 2);
+    });
+
+    socket.on('taskUpdated', (task) => {
+      log.innerText += "\n🔁 Task updated: " + JSON.stringify(task, null, 2);
+    });
+
+    socket.on('disconnect', () => {
+      log.innerText += "\n🔌 Disconnected from server";
+    });
+    socket.onAny((event, ...args) => {
+      log.innerText += `\n📡 Received event: ${event} → ${JSON.stringify(args)}`;
+});
+
+  </script>
+</body>
+</html>
