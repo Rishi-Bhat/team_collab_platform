@@ -28,5 +28,8 @@ router.patch("/:boardId/roles", protect, isAdminOnBoard, updateUserRoleOnBoard);
 
 module.exports = router;
 // This file defines the routes for board-related operations.
-// It uses the Express router to handle requests for creating and retrieving boards.
-// The 'protect' middleware ensures that only authenticated users can access these routes.
+// It includes routes for creating a board, retrieving user boards, adding members, deleting a board, and updating user roles on a board.
+// The routes are protected by authentication middleware, and some require admin access on the board.
+// The `isAdminOnBoard` middleware checks if the user has admin privileges on the specified board before allowing access to certain routes.
+// The routes are organized under the `/boards` path, and each route corresponds to a specific controller function that handles the request logic.
+// The `protect` middleware ensures that only authenticated users can access these routes, while the `isAdminOnBoard` middleware ensures that only users with admin privileges can perform certain actions, such as deleting a board or updating user roles.
