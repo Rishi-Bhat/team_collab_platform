@@ -8,6 +8,7 @@ const {
   getMyBoards,
   addMemberToBoard,
   deleteBoard,
+  updateUserRoleOnBoard,
 } = require("../controllers/boardController");
 
 // Route to create a new board
@@ -21,6 +22,9 @@ router.post("/add-member", protect, addMemberToBoard);
 
 // Route to delete a board
 router.delete("/:boardid", protect, isAdminOnBoard, deleteBoard);
+
+// Route to update a user's role on a board
+router.patch("/:boardId/roles", protect, isAdminOnBoard, updateUserRoleOnBoard);
 
 module.exports = router;
 // This file defines the routes for board-related operations.
