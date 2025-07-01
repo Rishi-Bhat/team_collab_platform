@@ -1,5 +1,6 @@
 const Task = require("../models/Task");
 const Board = require("../models/Board");
+const Notification = require("../models/Notification");
 
 // Create a new task
 const createTask = async (req, res) => {
@@ -87,6 +88,35 @@ const updateTaskStatus = async (req, res) => {
 
   res.status(200).json({ message: "Task status updated successfully.", task });
 };
+
+if (assignedTo) {
+  // Create a notification for the user assigned to the task
+  const notification = await Notification.create({
+    recipient: assignedTo,
+    type: "task-assigned",
+    message: `You have been assigned a new task: ${title}`,
+    link: `/tasks/${task._id}`, //or just task._id if you want to redirect to the task detail page
+  });
+  // Emit an event to notify the assigned user about the new task
+  const io = req.app.get("io");
+  io.to(assignedTo.toString()).emit(`notify:${assignedTo}`, notification);
+}
+
+// Notify the assignee (if not the same user creating the task)
+if (task.assignedTo && !task.assignedTo.equals(user._id)) {
+  const notification = await Notification.create({
+    recipient: task.assignedTo,
+    type: "comment",
+    message: `${req.user.name} commented on your task: ${task}`,
+    link: `/tasks/${task._id}`, // URL to redirect when the notification is clicked
+  });
+  // Emit an event to notify the assignee about the comment
+  const io = req.app.get("io");
+  io.to(task.assignedTo.toString()).emit(
+    `notify:${task.assignedTo}`,
+    notification
+  );
+}
 
 module.exports = { createTask, getBoardTasks, updateTaskStatus };
 // This code defines a task controller for a project management application.

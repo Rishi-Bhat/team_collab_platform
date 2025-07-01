@@ -54,6 +54,11 @@ app.use("/api/tasks", taskRoutes);
 const commentRoutes = require("./routes/commentRoutes");
 app.use("/api/comments", commentRoutes);
 
+// Importing the notification routes and using them in the application
+// This allows the application to handle requests related to notifications, such as fetching and marking notifications as read.
+const notificationRoutes = require("./routes/notificationRoutes");
+app.use("/api/notifications", notificationRoutes);
+
 //Socket.io events
 io.on("connection", (socket) => {
   console.log(`New client connected: ${socket.id}`);
@@ -61,6 +66,12 @@ io.on("connection", (socket) => {
   socket.on("joinBoard", (boardId) => {
     socket.join(boardId);
     console.log(`Socket ${socket.id} joined board ${boardId}`);
+  });
+
+  //Joining a room for notifications
+  socket.on("identify", (userId) => {
+    socket.join(userId);
+    console.log(`Socket ${socket.id} joined user room ${userId}`);
   });
 
   // Handle disconnection
