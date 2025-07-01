@@ -9,6 +9,9 @@ const createBoard = async (req, res) => {
     name,
     createdBy: req.user._id,
     members: [req.user._id],
+    roles: {
+      [req.user._id]: "admin", // Assigning the creator as an admin
+    },
   });
 
   res.status(201).json(board);
@@ -20,6 +23,14 @@ const getMyBoards = async (req, res) => {
   }).populate("members", "name email");
 
   res.status(200).json(boards);
+};
+
+const deleteBoard = async (req, res) => {
+  const board = req.board; // Assuming 'board' is set by the isAdminOnBoard middleware
+
+  await Board.findByIdAndDelete(boardId);
+
+  res.status(200).json({ message: "Board deleted successfully" });
 };
 // This file contains the controller functions for handling board-related operations.
 // It includes functions to create a new board and retrieve boards associated with the authenticated user.
@@ -65,7 +76,7 @@ const addMemberToBoard = async (req, res) => {
   res.status(200).json({ message: "Member added successfully", board });
 };
 
-module.exports = { createBoard, getMyBoards, addMemberToBoard };
+module.exports = { createBoard, getMyBoards, addMemberToBoard, deleteBoard };
 // This file defines the controller functions for board-related operations.
 // It includes functions to create a new board, retrieve boards for the authenticated user, and add a member to a board.
 // The 'addMemberToBoard' function checks if the user is authorized to add members and ensures the user exists before adding them to the board.

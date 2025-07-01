@@ -13,6 +13,15 @@ const boardSchema = new moongoose.Schema(
       ref: "User",
       required: true,
     },
+    title: {
+      type: String,
+      required: true,
+    },
+    createdBy: {
+      type: moongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
     members: [
       {
@@ -20,6 +29,12 @@ const boardSchema = new moongoose.Schema(
         ref: "User",
       },
     ],
+
+    roles: {
+      type: Map,
+      of: String,
+      default: {},
+    },
   },
   { timestamps: true }
 );
